@@ -1,5 +1,6 @@
 import psycopg2
 import random
+import sys
 
 RETAILERS = [
     'Buffalo Wild Wings',
@@ -8,8 +9,9 @@ RETAILERS = [
     'OReilly',
 ]
 
-retailer = 'Chipotle'
-ids = []
+RETAILER = sys.argv[1]
+COHORT_ID = int(sys.argv[2])
+COHORT_SIZE = int(sys.argv[3])
 
 try:
     conn = psycopg2.connect("dbname='datastore' user='panelists' host='panelists1.cxanyskfu563.us-west-1.rds.amazonaws.com' password='GtF4qK2l9SWbMD87'")
@@ -17,7 +19,8 @@ except:
     print "I am unable to connect to the database"
 cur = conn.cursor()
 
-def build_mass_insert_query(ids, cohort_id=1):
+def build_mass_insert_query(ids, cohort_id=COHORT_ID):
+    print ids[0:10]
     # Cohort ID is hard set to 1 right now
     i = "INSERT INTO panelist_cohorts (cohort_id, panelist_id) VALUES "
     values = []
@@ -25,7 +28,7 @@ def build_mass_insert_query(ids, cohort_id=1):
         values.append("(" + str(cohort_id) + ",  " + str(panelist_id) + ")")
     return i + ",".join(values) + ";"
 
-def gen_random_cohort(count=20001):
+def gen_random_cohort(count=COHORT_SIZE, cohort_id=COHORT_ID):
     cur.execute("""SELECT panelist_id from panelist_stats WHERE is_valid=true""")
     rows = cur.fetchall()
     ids = set()
@@ -35,7 +38,7 @@ def gen_random_cohort(count=20001):
 
     ids_list = list(ids)
     random.shuffle(ids_list)
-    return ids_list[0:count]
+    return [ids_list[0:count], cohort_id]
 
 def build_statement(retailer, q_start, q_end, ids, t='transactions'):
     statement = ''
@@ -74,7 +77,7 @@ quarter_mapping = {
 
 def cal_trans(retailer):
     current_cohort_stats = {}
-    ids = gen_random_cohort()
+    ids, cohort_id = gen_random_cohort()
 
     print ids[0:10]
 
@@ -99,19 +102,11 @@ def cal_trans(retailer):
             # print "basket_total: ", row[0]
             current_cohort_stats[k]['basket_total'] = row[0]
         # print
+    current_cohort_stats['ids'] = ids
+    current_cohort_stats['cohort_id'] = cohort_id
     return current_cohort_stats
 
-# pick random group of 20k to 30k
-#print len(gen_random_cohort())
-#print cal_trans()
-# test_data = {}
-# for retailer in RETAILERS:
-#     test_data[retailer] = cal_trans(retailer)
-
-test_data = cal_trans(retailer)
-
-# print test_data
-# test_data = {'3Q2017': {'basket_total': 205836.0, 'transactions': 6219L}, '3Q2016': {'basket_total': 177637.0, 'transactions': 5731L}, '4Q2016': {'basket_total': 204729.0, 'transactions': 6277L}, '4Q2015': {'basket_total': 138098.0, 'transactions': 4110L}, '2Q2016': {'basket_total': 166282.0, 'transactions': 5230L}, '2Q2017': {'basket_total': 208228.0, 'transactions': 6424L}, '1Q2017': {'basket_total': 212621.0, 'transactions': 6846L}, '1Q2016': {'basket_total': 176936.0, 'transactions': 5743L}}
+test_data = cal_trans(RETAILER)
 
 ALL_QUARTERS = [
     '4Q2015',
@@ -216,6 +211,8 @@ def yy_sales_growth(retailer):
         calculated = (this_year - last_year)/last_year
         # print actual_results_mapping[retailer]
         # print actual_results_mapping[retailer][s[0]]
+        print('which retailer am i comparing with?')
+        print(retailer)
         if actual_results_mapping[retailer][s[0]] == {}:
             continue
         actual = actual_results_mapping[retailer][s[0]]['yy_sales_growth']
@@ -227,6 +224,11 @@ def yy_sales_growth(retailer):
         sum_of_diff += abs(diff)
 
     # print "sum of abs diff: " + str(sum_of_diff)
+    ids = test_data['ids']
+    cohort_id = test_data['cohort_id']
+    result['ids'] = ids
+    result['cohort_id'] = cohort_id
+    result['number_of_panelists'] = len(ids)
     return result
 
 #TODO:
@@ -300,111 +302,59 @@ def yy_seq_sales_growth(retailer):
             ['2Q2017'],
         ]
 
-    result = {}
-
-    
     Q12017 = yy_sales['1Q2017']['calculated'] - yy_sales['4Q2016']['calculated']
     Q22017 = yy_sales['1Q2017']['calculated'] - yy_sales['2Q2017']['calculated']
+    ids = yy_sales['ids']
+    result = {
+        'ids': ids,
+        '1Q2017': Q12017,
+        '2Q2017': Q22017,
+        'cohort_id': yy_sales['cohort_id'], 
+        'number_of_panelists': len(ids)
+    }
+    return result
 
-    return Q12017 + Q22017
 
-    # # Retrieval Calculated Data
-    # # print 'quarter', 'yy_seq_sales_growth'
-    # for s in sequence:
-    #     result[s[0]] = {}
-    #     this_quarter = yy_sales[s[0]]['calculated']
-    #     last_quarter = yy_sales[s[1]]['calculated']
+##### 
+cohort_id = COHORT_ID
+current_seq_growth_error_margin = 99999
 
-    #     # calculated = (this_year - last_year)/last_year
-    #     # result[s[0]]['calculated'] = calculated
-    #     # print s[0], calculated
+cur.execute("""SELECT seq_sales_error FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id) )
+try:
+    current_seq_growth_error_margin = cur.fetchone()[0]
+except:
+    print('No successful cohort. seq_sales_error set to 99999')
 
-    # sum_of_diff = 0
+print('current_seq_growth_error_margin')
+print(current_seq_growth_error_margin)
+print('retailer')
+print(RETAILER)
+calculated_seq_growth_error_margin = yy_seq_sales_growth(RETAILER)
 
-    # # Look at Diff
-    # # print 'quarter', 'diff'
-    # for s in sequence:
-    #     this_year = test_data[s[0]]['basket_total']
-    #     last_year = test_data[s[1]]['basket_total']
-    #     calculated = (this_year - last_year)/last_year
-    #     actual = actual_results_mapping[retailer][s[0]]['yy_sales_growth']
-    #     if actual != None:
-    #         diff = calculated - actual
-    #     result[s[0]]['actual'] = actual
-    #     result[s[0]]['diff'] = diff
-    #     # print s[0], diff
-    #     sum_of_diff += abs(diff)
+ids = calculated_seq_growth_error_margin['ids']
+aggregate = calculated_seq_growth_error_margin['1Q2017'] + calculated_seq_growth_error_margin['2Q2017']
+cohort_id = calculated_seq_growth_error_margin['cohort_id']
+print(cohort_id)
+number_of_panelists = calculated_seq_growth_error_margin['number_of_panelists']
+seq_sales_error = abs(aggregate)
 
-    # print "sum of abs diff: " + str(sum_of_diff)
-    # return result
-    # comp_store_sales: (this year - last year) / last year
-    # sales_growth is basket_total
-    # [this year, last year]
-    # sequence = [
-    #     ['4Q2016', '4Q2015'],
-    #     ['1Q2017', '1Q2016'],
-    #     ['2Q2017', '2Q2016'],
-    #     ['3Q2017', '3Q2016']
-    # ]
-
-    # # Retrieval Calculated Data
-    # print 'quarter', 'yy_sales_growth'
-    # for s in sequence:
-    #     this_year = test_data[s[0]]['basket_total']
-    #     last_year = test_data[s[1]]['basket_total']
-    #     calculated = (this_year - last_year)/last_year
-    #     print s[0], calculated
-
-    # sum_of_diff = 0
-
-    # # Look at Diff
-    # print 'quarter', 'diff'
-    # for s in sequence:
-    #     this_year = test_data[s[0]]['basket_total']
-    #     last_year = test_data[s[1]]['basket_total']
-    #     calculated = (this_year - last_year)/last_year
-    #     actual = actual_results_mapping[retailer][s[0]]['yy_sales_growth']
-    #     if actual != None:
-    #         diff = calculated - actual
-    #     print s[0], diff
-    #     sum_of_diff += abs(diff)
-
-    # print sum_of_diff
-# '4Q2015': ['08-01-2015', '12-31-2015'],
-# '1Q2016': ['01-01-2016', '03-31-2016'],
-# '2Q2016': ['04-01-2016', '06-30-2016'],
-# '3Q2016': ['07-01-2016', '09-30-2016'],
-# '4Q2016': ['10-01-2016', '12-31-2016'],
-# '1Q2017': ['01-01-2017', '03-31-2017'],
-# '2Q2017': ['04-01-2017', '06-30-2017'],
-# '3Q2017': ['07-01-2017', '09-30-2017']
-# yy_sales_growth: (this year - last year) / last year
-#
-# seq_sales_growth: yy_sales_growth change
-#
-# comp_store_sales: (this year - last year) / last year
-#
-# yy_absolute_seq_change_comp_store_sales
-#
-# yy_relative_seq_change_comp_store_sales
-
-# write to a file
-# print('yy_sales_growth')
-# print(yy_sales_growth(retailer))
-# print("\n")
-#print('seq_sales_growth')
-#print(seq_sales_growth(retailer))
-#print("\n")
-
-cur.execute("""SELECT seq_sales_error FROM successful_cohorts WHERE cohort_id=1""")
-
-current_seq_growth_error_margin = 1
-calculated_seq_growth_error_margin = yy_seq_sales_growth(retailer)
 print('yy_seq_sales_growth')
-print(calculated_seq_growth_error_margin)
-print(abs(calculated_seq_growth_error_margin))
-print abs(calculated_seq_growth_error_margin) < current_seq_growth_error_margin
-if abs(calculated_seq_growth_error_margin) < current_seq_growth_error_margin:
+print(aggregate)
+print(abs(aggregate))
 
-    cur.execute("""DELETE FROM panelist_cohorts WHERE cohort_id=1""")
-    cur.execute(build_mass_insert_query(ids, cohort_id=1))
+print(abs(aggregate) < current_seq_growth_error_margin)
+if abs(aggregate) < current_seq_growth_error_margin:
+    cur.execute("""DELETE FROM panelist_cohorts WHERE cohort_id=""" + str(cohort_id))
+    conn.commit()
+    cur.execute("""DELETE FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id))
+    conn.commit()
+    cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error) VALUES (""" + str(cohort_id) + ",'" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ")")
+    conn.commit()
+    # cur.execute(build_mass_insert_query(ids, cohort_id=cohort_id))
+    conn.commit()
+
+# cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error) VALUES (1,'foo',20001,999)""");
+# conn.commit()
+# for idx, retailer in enumerate(RETAILERS):
+#     print(idx, retailer)
+#     runner(idx, retailer)
