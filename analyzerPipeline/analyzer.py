@@ -300,15 +300,18 @@ def yy_seq_sales_growth(retailer):
             ['4Q2016'],
             ['1Q2017'],
             ['2Q2017'],
+            ['3Q2017'],
         ]
 
     Q12017 = yy_sales['1Q2017']['calculated'] - yy_sales['4Q2016']['calculated']
     Q22017 = yy_sales['1Q2017']['calculated'] - yy_sales['2Q2017']['calculated']
+    Q32017 = yy_sales['2Q2017']['calculated'] - yy_sales['3Q2017']['calculated']
     ids = yy_sales['ids']
     result = {
         'ids': ids,
         '1Q2017': Q12017,
         '2Q2017': Q22017,
+        '3Q2017': Q32017, # predication quarter
         'cohort_id': yy_sales['cohort_id'], 
         'number_of_panelists': len(ids)
     }
@@ -351,6 +354,13 @@ if abs(aggregate) < current_seq_growth_error_margin:
     cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error,created_at) VALUES (""" + str(cohort_id) + ",'" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ",NOW())")
     conn.commit()
     cur.execute(build_mass_insert_query(ids, cohort_id=cohort_id))
+    conn.commit()
+    print('next quarter prediction')
+    print(calculated_seq_growth_error_margin['3Q2017'])
+    next_quarter_prediction = calculated_seq_growth_error_margin['3Q2017']
+    statement = "UPDATE successful_cohorts SET next_quarter_prediction=" + str(next_quarter_prediction) + " WHERE cohort_id=" + str(cohort_id)
+    print(statement)
+    cur.execute(statement)
     conn.commit()
 
 # cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error) VALUES (1,'foo',20001,999)""");
