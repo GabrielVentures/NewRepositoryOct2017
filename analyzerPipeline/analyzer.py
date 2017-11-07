@@ -348,9 +348,9 @@ if abs(aggregate) < current_seq_growth_error_margin:
     conn.commit()
     cur.execute("""DELETE FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id))
     conn.commit()
-    cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error) VALUES (""" + str(cohort_id) + ",'" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ")")
+    cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error,created_at) VALUES (""" + str(cohort_id) + ",'" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ",NOW())")
     conn.commit()
-    # cur.execute(build_mass_insert_query(ids, cohort_id=cohort_id))
+    cur.execute(build_mass_insert_query(ids, cohort_id=cohort_id))
     conn.commit()
 
 # cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error) VALUES (1,'foo',20001,999)""");
