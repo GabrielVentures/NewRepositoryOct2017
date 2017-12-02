@@ -423,11 +423,14 @@ if abs(aggregate) < current_seq_growth_error_margin:
     # conn.commit()
     # cur.execute("""DELETE FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id))
     # conn.commit()
-    cur.execute("""INSERT INTO successful_cohorts (retailer,number_of_panelists,seq_sales_error,created_at) VALUES ('""" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ",NOW());")
-
+    statement = """INSERT INTO successful_cohorts (retailer,number_of_panelists,seq_sales_error,created_at) VALUES ('""" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ",NOW());"
+    print(statement)
+    cur.execute(statement)
+    conn.commit()
     statement = """SELECT id FROM successful_cohorts WHERE retailer='""" + RETAILER + """' ORDER BY seq_sales_error LIMIT 1""" 
     print(statement)
     cur.execute(statement)
+    conn.commit()
     try:
         corhort_id = cur.fetchone()[0]
         print('found last corhort_id', cohort_id)
