@@ -9,6 +9,13 @@ RETAILERS = [
     'OReilly',
 ]
 
+# Burlington Coat Factory
+# ORLY
+# Ulta_OLD
+# Five Below
+# SBH
+# Sprouts Farmers Market
+
 RETAILER = sys.argv[1]
 COHORT_ID = int(sys.argv[2])
 COHORT_SIZE = int(sys.argv[3])
@@ -151,6 +158,66 @@ actual_results_mapping = {
             '3Q2017': {},
         },
     'Chipotle': {
+            '4Q2015': {},
+            '1Q2016': {},
+            '2Q2016': {},
+            '3Q2016': {},
+            '4Q2016': {},
+            '1Q2017': {},
+            '2Q2017': {},
+            '3Q2017': {},
+        },
+    'Burlington Coat Factory': {
+            '4Q2015': {},
+            '1Q2016': {},
+            '2Q2016': {},
+            '3Q2016': {},
+            '4Q2016': {},
+            '1Q2017': {},
+            '2Q2017': {},
+            '3Q2017': {},
+        },
+    'ORLY': {
+            '4Q2015': {},
+            '1Q2016': {},
+            '2Q2016': {},
+            '3Q2016': {},
+            '4Q2016': {},
+            '1Q2017': {},
+            '2Q2017': {},
+            '3Q2017': {},
+        },
+    'Ulta_OLD': {
+            '4Q2015': {},
+            '1Q2016': {},
+            '2Q2016': {},
+            '3Q2016': {},
+            '4Q2016': {},
+            '1Q2017': {},
+            '2Q2017': {},
+            '3Q2017': {},
+        },
+    'Five Below': {
+            '4Q2015': {},
+            '1Q2016': {},
+            '2Q2016': {},
+            '3Q2016': {},
+            '4Q2016': {},
+            '1Q2017': {},
+            '2Q2017': {},
+            '3Q2017': {},
+        },
+    'SBH': {
+            '4Q2015': {},
+            '1Q2016': {},
+            '2Q2016': {},
+            '3Q2016': {},
+            '4Q2016': {},
+            '1Q2017': {},
+            '2Q2017': {},
+            '3Q2017': {},
+        },
+    'Sprouts Farmers Market': {
             '4Q2015': {},
             '1Q2016': {},
             '2Q2016': {},
@@ -322,9 +389,14 @@ def yy_seq_sales_growth(retailer):
 cohort_id = COHORT_ID
 current_seq_growth_error_margin = 99999
 
-cur.execute("""SELECT seq_sales_error FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id) )
+# cur.execute("""SELECT seq_sales_error FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id) )
+print(RETAILER)
+statement = """SELECT seq_sales_error FROM successful_cohorts WHERE retailer='""" + RETAILER + """' ORDER BY seq_sales_error LIMIT 1""" 
+print(statement)
+cur.execute(statement)
 try:
     current_seq_growth_error_margin = cur.fetchone()[0]
+    print('found last current_seq_growth_error_margin', current_seq_growth_error_margin)
 except:
     print('No successful cohort. seq_sales_error set to 99999')
 
@@ -344,24 +416,39 @@ seq_sales_error = abs(aggregate)
 print('yy_seq_sales_growth')
 print(aggregate)
 print(abs(aggregate))
-
-print(abs(aggregate) < current_seq_growth_error_margin)
+print('current_seq_growth_error_margin', current_seq_growth_error_margin)
+print('abs(aggregate) < current_seq_growth_error_margin', abs(aggregate) < current_seq_growth_error_margin)
 if abs(aggregate) < current_seq_growth_error_margin:
-    cur.execute("""DELETE FROM panelist_cohorts WHERE cohort_id=""" + str(cohort_id))
-    conn.commit()
-    cur.execute("""DELETE FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id))
-    conn.commit()
-    cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error,created_at) VALUES (""" + str(cohort_id) + ",'" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ",NOW())")
-    conn.commit()
-    cur.execute(build_mass_insert_query(ids, cohort_id=cohort_id))
-    conn.commit()
-    print('next quarter prediction')
-    print(calculated_seq_growth_error_margin['3Q2017'])
-    next_quarter_prediction = calculated_seq_growth_error_margin['3Q2017']
-    statement = "UPDATE successful_cohorts SET next_quarter_prediction=" + str(next_quarter_prediction) + " WHERE cohort_id=" + str(cohort_id)
+    # cur.execute("""DELETE FROM panelist_cohorts WHERE cohort_id=""" + str(cohort_id))
+    # conn.commit()
+    # cur.execute("""DELETE FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id))
+    # conn.commit()
+    cur.execute("""INSERT INTO successful_cohorts (retailer,number_of_panelists,seq_sales_error,created_at) VALUES ('""" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ",NOW());")
+
+    statement = """SELECT id FROM successful_cohorts WHERE retailer='""" + RETAILER + """' ORDER BY seq_sales_error LIMIT 1""" 
     print(statement)
     cur.execute(statement)
-    conn.commit()
+    try:
+        corhort_id = cur.fetchone()[0]
+        print('found last corhort_id', cohort_id)
+        
+        foo = cur.fetchone()
+        print('foo', foo)
+        conn.commit()
+
+        cur.execute(build_mass_insert_query(ids, cohort_id=cohort_id))
+        conn.commit()
+        print('next quarter prediction')
+        print(calculated_seq_growth_error_margin['3Q2017'])
+        next_quarter_prediction = calculated_seq_growth_error_margin['3Q2017']
+        statement = "UPDATE successful_cohorts SET seq_sales_prediction=" + str(next_quarter_prediction) + " WHERE id=" + str(cohort_id)
+        print(statement)
+        # cur.execute(statement)
+        # conn.commit()
+    except:
+        print('No successful cohort. seq_sales_error set to 99999')
+
+
 
 # cur.execute("""INSERT INTO successful_cohorts (cohort_id,retailer,number_of_panelists,seq_sales_error) VALUES (1,'foo',20001,999)""");
 # conn.commit()
