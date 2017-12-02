@@ -1,0 +1,1 @@
+* * * * * /home/ec2-user/NewRepositoryOct2017/analyzerPipeline/run.sh > /home/ec2-user/NewRepositoryOct2017/analyzerPipeline/backup.log 2>&1
