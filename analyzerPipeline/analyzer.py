@@ -432,7 +432,7 @@ if abs(aggregate) < current_seq_growth_error_margin:
     cur.execute(statement)
     conn.commit()
     try:
-        corhort_id = cur.fetchone()[0]
+        cohort_id = cur.fetchone()[0]
         print('found last corhort_id', cohort_id)
         
         foo = cur.fetchone()
