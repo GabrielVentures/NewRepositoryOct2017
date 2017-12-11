@@ -417,5 +417,6 @@ for row in rows:
     next_quarter_prediction = calculated_seq_growth_error_margin['3Q2017']
     statement = "UPDATE successful_cohorts SET seq_sales_prediction=" + str(next_quarter_prediction) + " WHERE id=" + str(cohort_id)
     print(statement)
-    # cur.execute(statement)
-    # conn.commit()
+    cur.execute(statement)
+    conn.commit()
+    print('Done')
