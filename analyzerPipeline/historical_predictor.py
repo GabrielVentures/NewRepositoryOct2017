@@ -93,10 +93,10 @@ quarter_mapping = {
     '4Q2017': ['08-01-2017', '12-31-2017']
 }
 
-def cal_trans(retailer, cohort_id):
+def cal_trans(cohort_ids_obj, retailer, cohort_id):
     current_cohort_stats = {}
 
-    ids, cohort_id = get_cohort_by_id(cohort_id)
+    ids, cohort_id = cohort_ids_obj
     if len(ids) == 0:
         print('cohort_id', cohort_id)
     print('len(ids)', len(ids))
@@ -137,7 +137,14 @@ for row in rows:
     cohort_id = row[0]
 
     try:
-        test_data = cal_trans(RETAILER, cohort_id)
+        print('cohort_id is now', cohort_id)
+        print('RETAILER is still', RETAILER)
+
+        cohort_ids_obj = get_cohort_by_id(cohort_id)
+        if len(cohort_ids_obj[0]) == 0:
+            print('no cohort id found for ', cohort_id)
+            continue
+        test_data = cal_trans(cohort_ids_obj, RETAILER, cohort_id)
         # print(test_data)
 
         ALL_QUARTERS = [
@@ -431,4 +438,5 @@ for row in rows:
         conn.commit()
         print('Done')
     except:
-        print('Have some serious error doing cal_tran . Try next one')
+        print('Have some serious error doing cal_tran . Try next one. Cohort_id: ', cohort_id)
+        continue
