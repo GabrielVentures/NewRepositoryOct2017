@@ -57,6 +57,7 @@ def gen_random_cohort(count=COHORT_SIZE, cohort_id=COHORT_ID):
     return [ids_list[0:count], cohort_id]
 
 def build_statement(retailer, q_start, q_end, ids, t='transactions'):
+    print(q_start, q_end)
     statement = ''
     if t == 'transactions':
         statement = """SELECT count(*) from transactions WHERE \
@@ -96,6 +97,9 @@ def cal_trans(retailer, cohort_id):
     current_cohort_stats = {}
 
     ids, cohort_id = get_cohort_by_id(cohort_id)
+    if len(ids) == 0:
+        print('cohort_id', cohort_id)
+    print('len(ids)', len(ids))
     #ids, cohort_id = gen_random_cohort()
 
     # # print ids[0:10]
@@ -132,296 +136,299 @@ ids = set()
 for row in rows:
     cohort_id = row[0]
 
-    test_data = cal_trans(RETAILER, cohort_id)
-    # print(test_data)
+    try:
+        test_data = cal_trans(RETAILER, cohort_id)
+        # print(test_data)
 
-    ALL_QUARTERS = [
-        '4Q2015',
-        '1Q2016',
-        '2Q2016',
-        '3Q2016',
-        '4Q2016',
-        '1Q2017',
-        '2Q2017',
-        '3Q2017',
-        '4Q2017',
-    ]
+        ALL_QUARTERS = [
+            '4Q2015',
+            '1Q2016',
+            '2Q2016',
+            '3Q2016',
+            '4Q2016',
+            '1Q2017',
+            '2Q2017',
+            '3Q2017',
+            '4Q2017',
+        ]
 
-    actual_results_mapping = {
-        'Buffalo Wild Wings': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'Red Robin': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'OReilly': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'Chipotle': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'Burlington Coat Factory': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'ORLY': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'Ulta_OLD': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'Five Below': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'SBH': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
-            },
-        'Sprouts Farmers Market': {
-                '4Q2015': {},
-                '1Q2016': {},
-                '2Q2016': {},
-                '3Q2016': {},
-                '4Q2016': {},
-                '1Q2017': {},
-                '2Q2017': {},
-                '3Q2017': {},
+        actual_results_mapping = {
+            'Buffalo Wild Wings': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'Red Robin': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'OReilly': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'Chipotle': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'Burlington Coat Factory': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'ORLY': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'Ulta_OLD': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'Five Below': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'SBH': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                },
+            'Sprouts Farmers Market': {
+                    '4Q2015': {},
+                    '1Q2016': {},
+                    '2Q2016': {},
+                    '3Q2016': {},
+                    '4Q2016': {},
+                    '1Q2017': {},
+                    '2Q2017': {},
+                    '3Q2017': {},
+                }
             }
-        }
 
-    # Retrieve Real Data
+        # Retrieve Real Data
 
-    for retailer in RETAILERS:
-        cur.execute("""SELECT quarter, yy_sales_growth, seq_sales_growth, comp_store_sales, yy_absolute_seq_change_comp_store_sales from actual_results WHERE retailer='""" + retailer + "'")
-        rows = cur.fetchall()
-        for row in rows:
-            actual_results_mapping[retailer][row[0]]['quarter'] = row[0]
-            actual_results_mapping[retailer][row[0]]['yy_sales_growth'] = row[1]
-            actual_results_mapping[retailer][row[0]]['seq_sales_growth']= row[2]
-            actual_results_mapping[retailer][row[0]]['comp_store_sales'] = row[3]
-            actual_results_mapping[retailer][row[0]]['yy_absolute_seq_change_comp_store_sales']= row[4]
-        # # print "yy_sales_growth", row[0], row[1]
+        for retailer in RETAILERS:
+            cur.execute("""SELECT quarter, yy_sales_growth, seq_sales_growth, comp_store_sales, yy_absolute_seq_change_comp_store_sales from actual_results WHERE retailer='""" + retailer + "'")
+            rows = cur.fetchall()
+            for row in rows:
+                actual_results_mapping[retailer][row[0]]['quarter'] = row[0]
+                actual_results_mapping[retailer][row[0]]['yy_sales_growth'] = row[1]
+                actual_results_mapping[retailer][row[0]]['seq_sales_growth']= row[2]
+                actual_results_mapping[retailer][row[0]]['comp_store_sales'] = row[3]
+                actual_results_mapping[retailer][row[0]]['yy_absolute_seq_change_comp_store_sales']= row[4]
+            # # print "yy_sales_growth", row[0], row[1]
 
-    # Then calculate all of the metrics
-    # (Y/Y sales growth,
-    #     seq sales growth,
-    #     and sequential change in y/y sales growth)
-    def yy_sales_growth(retailer):
-        # yy_sales_growth (this year - last year) / last year
-        # sales_growth is basket_total
-        # [this year, last year]
-        sequence = [
-            ['4Q2016', '4Q2015'],
-            ['1Q2017', '1Q2016'],
-            ['2Q2017', '2Q2016'],
-            ['3Q2017', '3Q2016']
-        ]
-        result = {}
+        # Then calculate all of the metrics
+        # (Y/Y sales growth,
+        #     seq sales growth,
+        #     and sequential change in y/y sales growth)
+        def yy_sales_growth(retailer):
+            # yy_sales_growth (this year - last year) / last year
+            # sales_growth is basket_total
+            # [this year, last year]
+            sequence = [
+                ['4Q2016', '4Q2015'],
+                ['1Q2017', '1Q2016'],
+                ['2Q2017', '2Q2016'],
+                ['3Q2017', '3Q2016']
+            ]
+            result = {}
 
-        # Retrieval Calculated Data
-        # # print 'quarter', 'yy_sales_growth'
-        for s in sequence:
-            result[s[0]] = {}
-            this_year = test_data[s[0]]['basket_total']
-            last_year = test_data[s[1]]['basket_total']
-            calculated = (this_year - last_year)/last_year
-            result[s[0]]['calculated'] = calculated
-            # # print s[0], calculated
+            # Retrieval Calculated Data
+            # # print 'quarter', 'yy_sales_growth'
+            for s in sequence:
+                result[s[0]] = {}
+                this_year = test_data[s[0]]['basket_total']
+                last_year = test_data[s[1]]['basket_total']
+                calculated = (this_year - last_year)/last_year
+                result[s[0]]['calculated'] = calculated
+                # # print s[0], calculated
 
-        sum_of_diff = 0
+            sum_of_diff = 0
 
-        # Look at Diff
-        # # print 'quarter', 'diff'
-        for s in sequence:
-            this_year = test_data[s[0]]['basket_total']
-            last_year = test_data[s[1]]['basket_total']
-            calculated = (this_year - last_year)/last_year
-            # # print actual_results_mapping[retailer]
-            # # print actual_results_mapping[retailer][s[0]]
-            # print('which retailer am i comparing with?')
-            # print(retailer)
-            if actual_results_mapping[retailer][s[0]] == {}:
-                continue
-            actual = actual_results_mapping[retailer][s[0]]['yy_sales_growth']
-            if actual != None:
-                diff = calculated - actual
-            result[s[0]]['actual'] = actual
-            result[s[0]]['diff'] = diff
-            # # print s[0], diff
-            sum_of_diff += abs(diff)
+            # Look at Diff
+            # # print 'quarter', 'diff'
+            for s in sequence:
+                this_year = test_data[s[0]]['basket_total']
+                last_year = test_data[s[1]]['basket_total']
+                calculated = (this_year - last_year)/last_year
+                # # print actual_results_mapping[retailer]
+                # # print actual_results_mapping[retailer][s[0]]
+                # print('which retailer am i comparing with?')
+                # print(retailer)
+                if actual_results_mapping[retailer][s[0]] == {}:
+                    continue
+                actual = actual_results_mapping[retailer][s[0]]['yy_sales_growth']
+                if actual != None:
+                    diff = calculated - actual
+                result[s[0]]['actual'] = actual
+                result[s[0]]['diff'] = diff
+                # # print s[0], diff
+                sum_of_diff += abs(diff)
 
-        # # print "sum of abs diff: " + str(sum_of_diff)
-        ids = test_data['ids']
-        cohort_id = test_data['cohort_id']
-        result['ids'] = ids
-        result['cohort_id'] = cohort_id
-        result['number_of_panelists'] = len(ids)
-        return result
+            # # print "sum of abs diff: " + str(sum_of_diff)
+            ids = test_data['ids']
+            cohort_id = test_data['cohort_id']
+            result['ids'] = ids
+            result['cohort_id'] = cohort_id
+            result['number_of_panelists'] = len(ids)
+            return result
 
-    #TODO:
-    # start with seq comp yy
-    # should be only 2 numbers
-    # looks at change of sales
-    # if Q1 -> Q2 change is -4 and Q2->Q3 change is -1, then seq is -1 - -4 = +3
-    def seq_sales_growth(retailer):
-        # seq_sales_growth: (this quarter - last quarter) / last quarter
-        #
+        #TODO:
+        # start with seq comp yy
+        # should be only 2 numbers
+        # looks at change of sales
+        # if Q1 -> Q2 change is -4 and Q2->Q3 change is -1, then seq is -1 - -4 = +3
+        def seq_sales_growth(retailer):
+            # seq_sales_growth: (this quarter - last quarter) / last quarter
+            #
 
-        # sales_growth is basket_total
-        # [this year, last year]
-        sequence = [
-            ['1Q2016','4Q2015'],
-            ['2Q2016','1Q2016'],
-            ['3Q2016','2Q2016'],
-            ['4Q2016','3Q2016'],
-            ['1Q2017','4Q2016'],
-            ['2Q2017','1Q2017'],
-            ['3Q2017','2Q2017']
-        ]
-
-        result = {}
-
-        # Retrieval Calculated Data
-        # # print 'quarter', 'yy_sales_growth'
-        for s in sequence:
-            result[s[0]] = {}
-            this_year = test_data[s[0]]['basket_total']
-            last_year = test_data[s[1]]['basket_total']
-            calculated = (this_year - last_year)/last_year
-            result[s[0]]['calculated'] = calculated
-            # # print s[0], calculated
-
-        sum_of_diff = 0
-
-        # Look at Diff
-        # # print 'quarter', 'diff'
-        for s in sequence:
-            this_year = test_data[s[0]]['basket_total']
-            last_year = test_data[s[1]]['basket_total']
-            calculated = (this_year - last_year)/last_year
-            actual = actual_results_mapping[retailer][s[0]]['yy_sales_growth']
-            if actual != None:
-                diff = calculated - actual
-            result[s[0]]['actual'] = actual
-            result[s[0]]['diff'] = diff
-            # # print s[0], diff
-            sum_of_diff += abs(diff)
-
-        # # print "sum of abs diff: " + str(sum_of_diff)
-        return result
-
-
-    def yy_seq_sales_growth(retailer):
-        # sequential change in y/y sales growth
-
-        yy_sales = yy_sales_growth(retailer)
-
-        # # print "yy_sales"
-        # # print yy_sales
-
-        sequence = [
-                # ['1Q2017','4Q2016'],
-                # ['2Q2017','1Q2017'],
-                # ['3Q2017','2Q2017']
-                ['4Q2016'],
-                ['1Q2017'],
-                ['2Q2017'],
-                ['3Q2017'],
+            # sales_growth is basket_total
+            # [this year, last year]
+            sequence = [
+                ['1Q2016','4Q2015'],
+                ['2Q2016','1Q2016'],
+                ['3Q2016','2Q2016'],
+                ['4Q2016','3Q2016'],
+                ['1Q2017','4Q2016'],
+                ['2Q2017','1Q2017'],
+                ['3Q2017','2Q2017']
             ]
 
-        Q12017 = yy_sales['1Q2017']['calculated'] - yy_sales['4Q2016']['calculated']
-        Q22017 = yy_sales['1Q2017']['calculated'] - yy_sales['2Q2017']['calculated']
-        Q32017 = yy_sales['2Q2017']['calculated'] - yy_sales['3Q2017']['calculated']
-        ids = yy_sales['ids']
-        result = {
-            'ids': ids,
-            '1Q2017': Q12017,
-            '2Q2017': Q22017,
-            '3Q2017': Q32017, # predication quarter
-            'cohort_id': yy_sales['cohort_id'], 
-            'number_of_panelists': len(ids)
-        }
-        return result
+            result = {}
+
+            # Retrieval Calculated Data
+            # # print 'quarter', 'yy_sales_growth'
+            for s in sequence:
+                result[s[0]] = {}
+                this_year = test_data[s[0]]['basket_total']
+                last_year = test_data[s[1]]['basket_total']
+                calculated = (this_year - last_year)/last_year
+                result[s[0]]['calculated'] = calculated
+                # # print s[0], calculated
+
+            sum_of_diff = 0
+
+            # Look at Diff
+            # # print 'quarter', 'diff'
+            for s in sequence:
+                this_year = test_data[s[0]]['basket_total']
+                last_year = test_data[s[1]]['basket_total']
+                calculated = (this_year - last_year)/last_year
+                actual = actual_results_mapping[retailer][s[0]]['yy_sales_growth']
+                if actual != None:
+                    diff = calculated - actual
+                result[s[0]]['actual'] = actual
+                result[s[0]]['diff'] = diff
+                # # print s[0], diff
+                sum_of_diff += abs(diff)
+
+            # # print "sum of abs diff: " + str(sum_of_diff)
+            return result
 
 
-    calculated_seq_growth_error_margin = yy_seq_sales_growth(RETAILER)
+        def yy_seq_sales_growth(retailer):
+            # sequential change in y/y sales growth
 
-    ids = calculated_seq_growth_error_margin['ids']
-    aggregate = calculated_seq_growth_error_margin['1Q2017'] + calculated_seq_growth_error_margin['2Q2017']
-    cohort_id = calculated_seq_growth_error_margin['cohort_id']
-    # # print(cohort_id)
-    number_of_panelists = calculated_seq_growth_error_margin['number_of_panelists']
-    seq_sales_error = abs(aggregate)
+            yy_sales = yy_sales_growth(retailer)
 
-    next_quarter_prediction = calculated_seq_growth_error_margin['3Q2017']
-    statement = "UPDATE successful_cohorts SET prediction_quarter='(3,2017)', seq_sales_prediction=" + str(next_quarter_prediction) + " WHERE seq_sales_prediction is NULL AND id=" + str(cohort_id)
-    print(statement)
-    cur.execute(statement)
-    conn.commit()
-    print('Done')
-    statement = "UPDATE successful_cohorts SET cohort_id=id WHERE cohort_id is NULL AND id=" + str(cohort_id)
-    print(statement)
-    cur.execute(statement)
-    conn.commit()
-    print('Done')
+            # # print "yy_sales"
+            # # print yy_sales
+
+            sequence = [
+                    # ['1Q2017','4Q2016'],
+                    # ['2Q2017','1Q2017'],
+                    # ['3Q2017','2Q2017']
+                    ['4Q2016'],
+                    ['1Q2017'],
+                    ['2Q2017'],
+                    ['3Q2017'],
+                ]
+
+            Q12017 = yy_sales['1Q2017']['calculated'] - yy_sales['4Q2016']['calculated']
+            Q22017 = yy_sales['1Q2017']['calculated'] - yy_sales['2Q2017']['calculated']
+            Q32017 = yy_sales['2Q2017']['calculated'] - yy_sales['3Q2017']['calculated']
+            ids = yy_sales['ids']
+            result = {
+                'ids': ids,
+                '1Q2017': Q12017,
+                '2Q2017': Q22017,
+                '3Q2017': Q32017, # predication quarter
+                'cohort_id': yy_sales['cohort_id'], 
+                'number_of_panelists': len(ids)
+            }
+            return result
+
+
+        calculated_seq_growth_error_margin = yy_seq_sales_growth(RETAILER)
+
+        ids = calculated_seq_growth_error_margin['ids']
+        aggregate = calculated_seq_growth_error_margin['1Q2017'] + calculated_seq_growth_error_margin['2Q2017']
+        cohort_id = calculated_seq_growth_error_margin['cohort_id']
+        # # print(cohort_id)
+        number_of_panelists = calculated_seq_growth_error_margin['number_of_panelists']
+        seq_sales_error = abs(aggregate)
+
+        next_quarter_prediction = calculated_seq_growth_error_margin['3Q2017']
+        statement = "UPDATE successful_cohorts SET prediction_quarter='(3,2017)', seq_sales_prediction=" + str(next_quarter_prediction) + " WHERE seq_sales_prediction is NULL AND id=" + str(cohort_id)
+        print(statement)
+        cur.execute(statement)
+        conn.commit()
+        print('Done')
+        statement = "UPDATE successful_cohorts SET cohort_id=id WHERE cohort_id is NULL AND id=" + str(cohort_id)
+        print(statement)
+        cur.execute(statement)
+        conn.commit()
+        print('Done')
+    except:
+        print('Have some serious error doing cal_tran . Try next one')
