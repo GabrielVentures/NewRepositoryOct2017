@@ -420,3 +420,8 @@ for row in rows:
     cur.execute(statement)
     conn.commit()
     print('Done')
+    statement = "UPDATE successful_cohorts SET cohort_id=id WHERE cohort_id is NULL AND id=" + str(cohort_id)
+    print(statement)
+    cur.execute(statement)
+    conn.commit()
+    print('Done')
