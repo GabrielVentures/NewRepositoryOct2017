@@ -1,0 +1,152 @@
+[539586, 1255100, 1328089, 1091486, 1144558, 1147154, 95901, 1537917, 613204, 1430729]
+quarter:  07-01-2017 09-30-2017
+transaction 740
+quarter:  07-01-2016 09-30-2016
+transaction 729
+quarter:  10-01-2016 12-31-2016
+transaction 782
+quarter:  08-01-2015 12-31-2015
+transaction 516
+quarter:  04-01-2016 06-30-2016
+transaction 668
+quarter:  04-01-2017 06-30-2017
+transaction 815
+quarter:  01-01-2017 03-31-2017
+transaction 761
+quarter:  01-01-2016 03-31-2016
+transaction 758
+Buffalo Wild Wings
+SELECT seq_sales_error FROM successful_cohorts WHERE retailer='Buffalo Wild Wings' ORDER BY seq_sales_error LIMIT 1
+('found last current_seq_growth_error_margin', 2.20798e-07)
+current_seq_growth_error_margin
+2.20798e-07
+retailer
+Buffalo Wild Wings
+which retailer am i comparing with?
+Buffalo Wild Wings
+which retailer am i comparing with?
+Buffalo Wild Wings
+which retailer am i comparing with?
+Buffalo Wild Wings
+which retailer am i comparing with?
+Buffalo Wild Wings
+6
+yy_seq_sales_growth
+-0.599363037649
+0.599363037649
+('current_seq_growth_error_margin', 2.20798e-07)
+('abs(aggregate) < current_seq_growth_error_margin', False)
+[1391313, 336605, 257256, 1186778, 899908, 184725, 1286026, 1101222, 1250818, 579340]
+quarter:  07-01-2017 09-30-2017
+transaction 1847
+quarter:  07-01-2016 09-30-2016
+transaction 2235
+quarter:  10-01-2016 12-31-2016
+transaction 2117
+quarter:  08-01-2015 12-31-2015
+transaction 1053
+quarter:  04-01-2016 06-30-2016
+transaction 2136
+quarter:  04-01-2017 06-30-2017
+transaction 2009
+quarter:  01-01-2017 03-31-2017
+transaction 1918
+quarter:  01-01-2016 03-31-2016
+transaction 1828
+Chipotle
+SELECT seq_sales_error FROM successful_cohorts WHERE retailer='Chipotle' ORDER BY seq_sales_error LIMIT 1
+('found last current_seq_growth_error_margin', 8.45855e-05)
+current_seq_growth_error_margin
+8.45855e-05
+retailer
+Chipotle
+which retailer am i comparing with?
+Chipotle
+which retailer am i comparing with?
+Chipotle
+which retailer am i comparing with?
+Chipotle
+which retailer am i comparing with?
+Chipotle
+7
+yy_seq_sales_growth
+-0.70085414246
+0.70085414246
+('current_seq_growth_error_margin', 8.45855e-05)
+('abs(aggregate) < current_seq_growth_error_margin', False)
+[267609, 1302420, 1502514, 222893, 960740, 720902, 100129, 1237340, 758333, 814552]
+quarter:  07-01-2017 09-30-2017
+transaction 546
+quarter:  07-01-2016 09-30-2016
+transaction 553
+quarter:  10-01-2016 12-31-2016
+transaction 586
+quarter:  08-01-2015 12-31-2015
+transaction 402
+quarter:  04-01-2016 06-30-2016
+transaction 550
+quarter:  04-01-2017 06-30-2017
+transaction 603
+quarter:  01-01-2017 03-31-2017
+transaction 550
+quarter:  01-01-2016 03-31-2016
+transaction 586
+Red Robin
+SELECT seq_sales_error FROM successful_cohorts WHERE retailer='Red Robin' ORDER BY seq_sales_error LIMIT 1
+('found last current_seq_growth_error_margin', 0.000188658)
+current_seq_growth_error_margin
+0.000188658
+retailer
+Red Robin
+which retailer am i comparing with?
+Red Robin
+which retailer am i comparing with?
+Red Robin
+which retailer am i comparing with?
+Red Robin
+which retailer am i comparing with?
+Red Robin
+8
+yy_seq_sales_growth
+-0.567773625264
+0.567773625264
+('current_seq_growth_error_margin', 0.000188658)
+('abs(aggregate) < current_seq_growth_error_margin', False)
+[459772, 1297824, 968853, 1157572, 600018, 1002887, 1364546, 1465114, 609932, 677842]
+quarter:  07-01-2017 09-30-2017
+transaction 983
+quarter:  07-01-2016 09-30-2016
+transaction 341
+quarter:  10-01-2016 12-31-2016
+transaction 377
+quarter:  08-01-2015 12-31-2015
+transaction 332
+quarter:  04-01-2016 06-30-2016
+transaction 328
+quarter:  04-01-2017 06-30-2017
+transaction 1021
+quarter:  01-01-2017 03-31-2017
+transaction 908
+quarter:  01-01-2016 03-31-2016
+transaction 337
+ORLY
+SELECT seq_sales_error FROM successful_cohorts WHERE retailer='ORLY' ORDER BY seq_sales_error LIMIT 1
+('found last current_seq_growth_error_margin', 3.28995e-05)
+current_seq_growth_error_margin
+3.28995e-05
+retailer
+ORLY
+which retailer am i comparing with?
+ORLY
+which retailer am i comparing with?
+ORLY
+which retailer am i comparing with?
+ORLY
+which retailer am i comparing with?
+ORLY
+9
+yy_seq_sales_growth
+1.36393112053
+1.36393112053
+('current_seq_growth_error_margin', 3.28995e-05)
+('abs(aggregate) < current_seq_growth_error_margin', False)

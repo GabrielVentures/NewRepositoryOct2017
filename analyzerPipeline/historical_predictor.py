@@ -35,6 +35,18 @@ def build_mass_insert_query(ids, cohort_id=COHORT_ID):
         values.append("(" + str(cohort_id) + ",  " + str(panelist_id) + ")")
     return i + ",".join(values) + ";"
 
+def get_cohort_by_id(cohort_id):
+    cur.execute("""SELECT panelist_id from panelist_cohorts WHERE cohort_id=""" + str(cohort_id))
+    rows = cur.fetchall()
+    ids = set()
+    for row in rows:
+        #print "   ", row[0], row[1], row[2]
+        ids.add(row[0])
+
+    ids_list = list(ids)
+    random.shuffle(ids_list)
+    return [ids_list[0:count], cohort_id]
+
 def gen_random_cohort(count=COHORT_SIZE, cohort_id=COHORT_ID):
     cur.execute("""SELECT panelist_id from panelist_stats WHERE is_valid=true""")
     rows = cur.fetchall()
@@ -79,12 +91,16 @@ quarter_mapping = {
     '4Q2016': ['10-01-2016', '12-31-2016'],
     '1Q2017': ['01-01-2017', '03-31-2017'],
     '2Q2017': ['04-01-2017', '06-30-2017'],
-    '3Q2017': ['07-01-2017', '09-30-2017']
+    '3Q2017': ['07-01-2017', '09-30-2017'],
+    '4Q2017': ['08-01-2017', '12-31-2017']
 }
 
-def cal_trans(retailer):
+def cal_trans(retailer, cohort_id=cid):
     current_cohort_stats = {}
-    ids, cohort_id = gen_random_cohort()
+
+    ids, cohort_id = get_cohort_by_id(cid)
+    cohort_id = cid
+    #ids, cohort_id = gen_random_cohort()
 
     print ids[0:10]
 
@@ -113,7 +129,19 @@ def cal_trans(retailer):
     current_cohort_stats['cohort_id'] = cohort_id
     return current_cohort_stats
 
-test_data = cal_trans(RETAILER)
+
+cur.execute("""SELECT panelist_id from panelist_cohorts WHERE cohort_id=""" + str(cohort_id))
+rows = cur.fetchall()
+ids = set()
+for row in rows:
+    #print "   ", row[0], row[1], row[2]
+    ids.add(row[0])
+
+ids_list = list(ids)
+random.shuffle(ids_list)
+return [ids_list[0:count], cohort_id]
+
+test_data = cal_trans(RETAILER, cohort_id=)
 print(test_data)
 
 ALL_QUARTERS = [
@@ -414,40 +442,40 @@ print(cohort_id)
 number_of_panelists = calculated_seq_growth_error_margin['number_of_panelists']
 seq_sales_error = abs(aggregate)
 
-print('yy_seq_sales_growth')
-print(aggregate)
-print(abs(aggregate))
-print('current_seq_growth_error_margin', current_seq_growth_error_margin)
-print('abs(aggregate) < current_seq_growth_error_margin', abs(aggregate) < current_seq_growth_error_margin)
-if abs(aggregate) < current_seq_growth_error_margin:
-    # cur.execute("""DELETE FROM panelist_cohorts WHERE cohort_id=""" + str(cohort_id))
+#print('yy_seq_sales_growth')
+#print(aggregate)
+#print(abs(aggregate))
+#print('current_seq_growth_error_margin', current_seq_growth_error_margin)
+#print('abs(aggregate) < current_seq_growth_error_margin', abs(aggregate) < current_seq_growth_error_margin)
+#abs(aggregate) < current_seq_growth_error_margin:
+# cur.execute("""DELETE FROM panelist_cohorts WHERE cohort_id=""" + str(cohort_id))
+# conn.commit()
+# cur.execute("""DELETE FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id))
+# conn.commit()
+statement = """INSERT INTO successful_cohorts (retailer,number_of_panelists,seq_sales_error,created_at) VALUES ('""" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ",NOW());"
+# print(statement)
+# cur.execute(statement)
+# conn.commit()
+statement = """SELECT id FROM successful_cohorts WHERE retailer='""" + RETAILER + """' ORDER BY seq_sales_error LIMIT 1""" 
+# print(statement)
+# cur.execute(statement)
+# conn.commit()
+try:
+    cohort_id = cur.fetchone()[0]
+    print('found last corhort_id', cohort_id)
     # conn.commit()
-    # cur.execute("""DELETE FROM successful_cohorts WHERE cohort_id=""" + str(cohort_id))
-    # conn.commit()
-    statement = """INSERT INTO successful_cohorts (retailer,number_of_panelists,seq_sales_error,created_at) VALUES ('""" +RETAILER+"'," + str(number_of_panelists) + "," + str(seq_sales_error) + ",NOW());"
-    # print(statement)
-    # cur.execute(statement)
-    # conn.commit()
-    statement = """SELECT id FROM successful_cohorts WHERE retailer='""" + RETAILER + """' ORDER BY seq_sales_error LIMIT 1""" 
-    # print(statement)
-    # cur.execute(statement)
-    # conn.commit()
-    try:
-        cohort_id = cur.fetchone()[0]
-        print('found last corhort_id', cohort_id)
-        # conn.commit()
 
-        # cur.execute(build_mass_insert_query(ids, cohort_id=cohort_id))
-        # conn.commit()
-        print('next quarter prediction')
-        print(calculated_seq_growth_error_margin['3Q2017'])
-        next_quarter_prediction = calculated_seq_growth_error_margin['3Q2017']
-        statement = "UPDATE successful_cohorts SET seq_sales_prediction=" + str(next_quarter_prediction) + " WHERE id=" + str(cohort_id)
-        print(statement)
-        # cur.execute(statement)
-        # conn.commit()
-    except:
-        print('No successful cohort. seq_sales_error set to 99999')
+    # cur.execute(build_mass_insert_query(ids, cohort_id=cohort_id))
+    # conn.commit()
+    print('next quarter prediction')
+    print(calculated_seq_growth_error_margin['3Q2017'])
+    next_quarter_prediction = calculated_seq_growth_error_margin['3Q2017']
+    statement = "UPDATE successful_cohorts SET seq_sales_prediction=" + str(next_quarter_prediction) + " WHERE id=" + str(cohort_id)
+    print(statement)
+    # cur.execute(statement)
+    # conn.commit()
+except:
+    print('No successful cohort. seq_sales_error set to 99999')
 
 
 
